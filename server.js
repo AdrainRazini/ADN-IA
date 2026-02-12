@@ -18,17 +18,65 @@ const client = new Groq({
   apiKey: process.env.GROQ_API_KEY
 });
 
+// =======================
+// CACHE SIMPLES
+// =======================
+
+const cache = new Map();
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutos
+const MAX_CACHE_SIZE = 100;
+
+// Função para limpar cache antigo
+function cleanCache() {
+  const now = Date.now();
+
+  for (const [key, value] of cache.entries()) {
+    if (now - value.timestamp > CACHE_TTL) {
+      cache.delete(key);
+    }
+  }
+
+  // Limita tamanho máximo
+  if (cache.size > MAX_CACHE_SIZE) {
+    const firstKey = cache.keys().next().value;
+    cache.delete(firstKey);
+  }
+}
+
+// =======================
 // ROTA DE CHAT
+// =======================
+
 app.post("/chat", async (req, res) => {
   try {
     const userMessage = req.body.message;
+
+    if (!userMessage) {
+      return res.status(400).json({ error: "Message is required." });
+    }
+
+    const normalized = userMessage.trim().toLowerCase();
+
+    cleanCache();
+
+    // 🔥 Verifica cache
+    if (cache.has(normalized)) {
+      return res.json({
+        reply: cache.get(normalized).response,
+        cached: true
+      });
+    }
 
     const completion = await client.chat.completions.create({
       model: "llama-3.1-8b-instant",
       messages: [
         {
-        role: "system",
-        content: "Você é o ChatBot V3, versão 1.0, um micro assistente de conversa adaptado por Adrian Razini Rangel. Você utiliza o modelo Llama 3.1 8B Instant da Groq. Responda sempre com clareza, objetividade e simpatia."
+          role: "system",
+          content: `
+You are ChatBot V3, version 1.0, a micro conversational assistant adapted by Adrian Razini Rangel.
+You use the Groq Llama 3.1 8B Instant model.
+Always respond clearly, objectively, and kindly.
+`
         },
         {
           role: "user",
@@ -37,9 +85,15 @@ app.post("/chat", async (req, res) => {
       ]
     });
 
-    res.json({
-      reply: completion.choices[0].message.content
+    const reply = completion.choices[0].message.content;
+
+    // Salva no cache
+    cache.set(normalized, {
+      response: reply,
+      timestamp: Date.now()
     });
+
+    res.json({ reply, cached: false });
 
   } catch (error) {
     console.error(error);
@@ -47,11 +101,12 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+// =======================
+// SERVIR FRONTEND
+// =======================
 
-// Servir arquivos públicos
 app.use(express.static(path.join(__dirname, "public")));
 
-// ROTA /
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
