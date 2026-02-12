@@ -59,7 +59,7 @@ app.post("/chat", async (req, res) => {
 
     cleanCache();
 
-    // 🔥 Verifica cache
+    // Verifica cache
     if (cache.has(normalized)) {
       return res.json({
         reply: cache.get(normalized).response,
@@ -111,4 +111,20 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
+// ============================
+// SERVER
+// ============================
+
+const PORT = process.env.PORT || 3000;
+
+const isServerless = process.env.VERCEL || process.env.AWS_REGION;
+
+if (!isServerless) {
+  app.listen(PORT, () => {
+    console.log(`[ChatBot] Backend rodando na porta ${PORT}`);
+  });
+} else {
+  console.log("Backend pronto para Serverless");
+}
+
+export default app; // o api/index.js escuta o app quando eu mudar as apis para Routs 
