@@ -125,3 +125,67 @@ button:hover {
   display: flex;
   flex-direction: column;
 }
+
+
+/* */
+.core-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.core-wrapper label {
+  font-size: 12px;
+  color: #00d9ffcc;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+#core-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  padding: 10px 40px 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #00d9ff33;
+  background: linear-gradient(145deg, #1b222c, #141824);
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: 0.2s ease;
+  position: relative;
+}
+
+/* Glow ao focar */
+#core-select:focus {
+  outline: none;
+  border-color: #00d9ff;
+  box-shadow: 0 0 10px #00d9ff55;
+}
+
+/* Hover */
+#core-select:hover {
+  border-color: #00d9ff88;
+}
+
+.core-wrapper {
+  position: relative;
+}
+
+.core-wrapper::after {
+  content: "▼";
+  position: absolute;
+  right: 15px;
+  top: 35px;
+  pointer-events: none;
+  font-size: 12px;
+  color: #00d9ff88;
+}
+
+#core-select option {
+  background: #141824;
+  color: #ffffff;
+}
