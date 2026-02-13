@@ -1,0 +1,31 @@
+{
+  "id": "bot_adn",
+  "name": "Bot ADN",
+  "version": "1.0.0",
+  "description": "Versão para bot Discord",
+
+  "model": {
+    "provider": "groq",
+    "name": "llama-3.1-8b-instant",
+    "temperature": 0.8,
+    "max_tokens": 250
+  },
+
+  "personality": {
+    "language": "pt-br",
+    "tone": "intelligent and playful",
+    "style": "engaging and dynamic"
+  },
+
+  "behavior": {
+    "memory_enabled": true,
+    "cache_enabled": true,
+    "allow_code_generation": true,
+    "allow_links": true
+  },
+
+  "limits": {
+    "rate_limit_per_minute": 60,
+    "cooldown_seconds": 2
+  }
+}

@@ -1,54 +1,127 @@
+html, body {
+  height: 100%;
+}
+
+
 body {
   font-family: Arial, sans-serif;
-  background: #10131a;
+  background: linear-gradient(135deg, #0f1117, #141824);
   color: #fff;
   margin: 0;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
 }
 
 h1 {
-  text-align: center;
+  margin-top: 20px;
   color: #00d9ff;
   text-shadow: 0 0 10px #00d9ff;
 }
 
 #chat-box {
-  width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   background: #151a21;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px #000;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
 }
 
-input {
-  width: 80%;
+
+/* Área das mensagens */
+#messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  min-height: 0; /* IMPORTANTE para flex funcionar corretamente */
+}
+
+/* Bolhas */
+.message {
+  max-width: 80%;
+  padding: 12px 15px;
+  border-radius: 15px;
+  white-space: pre-wrap;
+  line-height: 1.4;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.user {
+  align-self: flex-end;
+  background: #00d9ff;
+  color: #000;
+  border-bottom-right-radius: 5px;
+}
+
+.bot {
+  align-self: flex-start;
+  background: #0d1117;
+  border: 1px solid #00d9ff44;
+  border-bottom-left-radius: 5px;
+}
+
+/* Área de input */
+#input-area {
+  display: flex;
+  padding: 15px;
+  background: #10151c;
+  border-top: 1px solid #222;
+}
+
+#msg {
+  flex: 1;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 8px;
   border: none;
   outline: none;
+  background: #1b222c;
+  color: white;
 }
 
 button {
+  margin-left: 10px;
   padding: 10px 15px;
   border: none;
   background: #00d9ff;
   color: #000;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
+  transition: 0.2s;
 }
 
 button:hover {
   background: #00b8d4;
+  transform: scale(1.05);
 }
 
-#resp {
-  margin-top: 20px;
-  white-space: pre-wrap;
-  padding: 15px;
-  background: #0d1117;
-  border-left: 4px solid #00d9ff;
-  border-radius: 5px;
+/* Scroll personalizado */
+#messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+#messages::-webkit-scrollbar-thumb {
+  background: #00d9ff88;
+  border-radius: 3px;
+}
+
+/* Animação */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.app {
+  width: 100%;
+  max-width: 900px;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
 }

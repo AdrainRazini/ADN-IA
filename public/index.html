@@ -2,19 +2,35 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>ChatBot V3</title>
+  <title>ADN Nexus</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="shortcut icon" href="image/Adn_Nexus.png" type="image/x-icon">
+  <link rel="shortcut icon" href="image/Adn_Nexus.png">
 </head>
 <body>
 
-  <h1>ChatBot V3</h1>
+  <div class="app">
 
-  <div id="chat-box">
-    <input id="msg" placeholder="Digite sua mensagem...">
-    <button onclick="send()">Enviar</button>
+    <header class="top-bar">
+      <h1>ADN Nexus</h1>
 
-    <pre id="resp"></pre>
+      <select id="core-select">
+        <option value="mini_adn">Mini ADN</option>
+        <option value="mini_adn_pro" selected>Mini ADN Pro</option>
+        <option value="bot_adn">Bot ADN</option>
+      </select>
+    </header>
+
+    <div id="chat-box">
+
+      <div id="messages"></div>
+
+      <div id="input-area">
+        <input id="msg" placeholder="Digite sua mensagem..." onkeydown="if(event.key==='Enter') send()">
+        <button onclick="send()">Enviar</button>
+      </div>
+
+    </div>
+
   </div>
 
   <script src="js/app.js"></script>

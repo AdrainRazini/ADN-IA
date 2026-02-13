@@ -1,18 +1,43 @@
+function addMessage(text, type) {
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add("message", type);
+  msgDiv.textContent = text;
+
+  const messages = document.getElementById("messages");
+  messages.appendChild(msgDiv);
+  messages.scrollTop = messages.scrollHeight;
+}
+
 async function send() {
-  const text = document.getElementById("msg").value;
+  const input = document.getElementById("msg");
+  const core = document.getElementById("core-select").value;
+  const text = input.value.trim();
 
-  if (!text.trim()) return;
+  if (!text) return;
 
-  // Mostra texto temporário enquanto espera a resposta
-  document.getElementById("resp").textContent = "⌛ Processando...";
+  addMessage(text, "user");
+  input.value = "";
 
-  const res = await fetch("/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: text })
-  });
+  addMessage("⌛ Processando...", "bot");
 
-  const data = await res.json();
+  try {
+    const res = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: text,
+        core: core
+      })
+    });
 
-  document.getElementById("resp").textContent = data.reply;
+    const data = await res.json();
+
+    const messages = document.getElementById("messages");
+    messages.removeChild(messages.lastChild);
+
+    addMessage(`[${data.core}] \n\n${data.reply}`, "bot");
+
+  } catch (err) {
+    addMessage("❌ Erro ao conectar com a API.", "bot");
+  }
 }

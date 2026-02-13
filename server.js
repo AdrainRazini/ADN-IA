@@ -47,59 +47,9 @@ function cleanCache() {
 // ROTA DE CHAT
 // =======================
 
-app.post("/chat", async (req, res) => {
-  try {
-    const userMessage = req.body.message;
+import chatRoute from "./routes/chat.js";
 
-    if (!userMessage) {
-      return res.status(400).json({ error: "Message is required." });
-    }
-
-    const normalized = userMessage.trim().toLowerCase();
-
-    cleanCache();
-
-    // Verifica cache
-    if (cache.has(normalized)) {
-      return res.json({
-        reply: cache.get(normalized).response,
-        cached: true
-      });
-    }
-
-    const completion = await client.chat.completions.create({
-      model: "llama-3.1-8b-instant",
-      messages: [
-        {
-          role: "system",
-          content: `
-You are ChatBot V3, version 1.0, a micro conversational assistant adapted by Adrian Razini Rangel.
-You use the Groq Llama 3.1 8B Instant model.
-Always respond clearly, objectively, and kindly.
-`
-        },
-        {
-          role: "user",
-          content: userMessage
-        }
-      ]
-    });
-
-    const reply = completion.choices[0].message.content;
-
-    // Salva no cache
-    cache.set(normalized, {
-      response: reply,
-      timestamp: Date.now()
-    });
-
-    res.json({ reply, cached: false });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro na API", detail: error.message });
-  }
-});
+app.use("/chat", chatRoute);
 
 // =======================
 // SERVIR FRONTEND
@@ -110,6 +60,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
+// app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
 
 // ============================
 // SERVER
