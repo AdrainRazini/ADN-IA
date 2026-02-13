@@ -11,11 +11,13 @@
     "max_tokens": 600
   },
 
-  "personality": {
+ "personality": {
     "language": "en-us",
     "tone": "friendly and simple",
     "style": "casual and direct"
-  },
+  },  
+
+   "system_prompt": "You are a pro test chat assistant. Keep things simple, friendly, and straight to the point. Make conversations feel natural and easy.",
 
   "behavior": {
     "memory_enabled": false,

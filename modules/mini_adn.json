@@ -1,7 +1,7 @@
 {
   "id": "mini_adn",
   "name": "Mini ADN",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Versão leve para mini chat web",
 
   "model": {
@@ -16,6 +16,9 @@
     "tone": "friendly and simple",
     "style": "casual and direct"
   },
+
+"system_prompt": "You are a professional test chat assistant. Respond clearly, confidently, and efficiently. Keep answers short and helpful.",
+
 
   "behavior": {
     "memory_enabled": false,
