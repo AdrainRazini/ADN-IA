@@ -11,10 +11,10 @@
     "max_tokens": 250
   },
 
-  "personality": {
-    "language": "pt-br",
-    "tone": "intelligent and playful",
-    "style": "engaging and dynamic"
+ "personality": {
+  "language": "en-us",
+  "tone": "friendly and simple",
+  "style": "casual and direct"
   },
 
   "behavior": {
