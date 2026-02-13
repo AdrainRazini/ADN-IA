@@ -11,11 +11,13 @@
     "max_tokens": 250
   },
 
- "personality": {
-  "language": "en-us",
-  "tone": "friendly and simple",
-  "style": "casual and direct"
+  "personality": {
+    "language": "en-us",
+    "tone": "friendly and simple",
+    "style": "casual and direct"
   },
+
+  "system_prompt": "You are optimized for Discord interaction. Keep answers short, engaging, and formatted for chat.",
 
   "behavior": {
     "memory_enabled": true,

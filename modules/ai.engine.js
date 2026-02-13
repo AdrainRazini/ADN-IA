@@ -11,22 +11,23 @@ const client = new Groq({
 });
 
 function loadCore(coreName) {
-  const filePath = path.join(__dirname, `${coreName}.json`);
-  return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  try {
+    const filePath = path.join(__dirname, `${coreName}.json`);
+
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Core "${coreName}" not found.`);
+    }
+
+    return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  } catch (error) {
+    console.error("Core loading error:", error.message);
+    throw error;
+  }
 }
 
-export async function runCore(coreName, userMessage) {
-  const core = loadCore(coreName);
-
-  const completion = await client.chat.completions.create({
-    model: core.model.name,
-    temperature: core.model.temperature,
-    max_tokens: core.model.max_tokens,
-    messages: [
-      {
-  role: "system",
-  content: `
-You are ${core.name}, version ${core.version}.
+function buildSystemPrompt(core, customPrompt) {
+  return `
+You are ${core.name ?? "ADN Core"}, version ${core.version ?? "1.0.0"}.
 
 Identity Rules:
 - You are NOT a generic language model.
@@ -36,26 +37,52 @@ Identity Rules:
 - You fully represent the ADN Nexus platform.
 
 Language Rules:
-- Always respond in ${core.personality.language}.
+- Always respond in ${core?.personality?.language ?? "en-us"}.
 - Even if the user writes in another language.
 
 Personality:
-Tone: ${core.personality.tone}.
-Style: ${core.personality.style}.
+Tone: ${core?.personality?.tone ?? "neutral"}.
+Style: ${core?.personality?.style ?? "clear"}.
 
 Behavior Rules:
 - Be confident.
 - Be clear.
 - Avoid unnecessary disclaimers.
 - If you cannot access external links, simply say you cannot access external content directly.
-`
-},
-      {
-        role: "user",
-        content: userMessage
-      }
-    ]
-  });
 
-  return completion?.choices?.[0]?.message?.content || "Erro na resposta da IA";
+Core Custom Prompt:
+${core.system_prompt ?? ""}
+
+Backend Custom Prompt:
+${customPrompt ?? ""}
+`;
+}
+
+export async function runCore(coreName, userMessage, customPrompt = "", overrides = {}) {
+  try {
+    const core = loadCore(coreName);
+
+    const systemPrompt = buildSystemPrompt(core, customPrompt);
+
+    const completion = await client.chat.completions.create({
+      model: overrides.model ?? core.model?.name,
+      temperature: overrides.temperature ?? core.model?.temperature ?? 0.7,
+      max_tokens: overrides.max_tokens ?? core.model?.max_tokens ?? 300,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: userMessage
+        }
+      ]
+    });
+
+    return completion?.choices?.[0]?.message?.content || "AI response error";
+  } catch (error) {
+    console.error("runCore error:", error.message);
+    return "Internal AI execution error.";
+  }
 }
