@@ -5,7 +5,7 @@ import Groq from "groq-sdk";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Corrigir __dirname no ESModule
+// Corrigir __dirname no ESModule Essa Porr... Para Type="Module"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -13,13 +13,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Inicializa Groq
+// Inicializa Groq -- Minha Api Key do .env
 const client = new Groq({
   apiKey: process.env.GROQ_API_KEY
 });
 
+// const Chave_Key = process.env.CHAVE_MESTRA // Chave Key
+
 // =======================
-// CACHE SIMPLES
+// CACHE SIMPLES -- Vercel adora (functions invocations) -- Cache na Api 
 // =======================
 
 const cache = new Map();
@@ -49,7 +51,8 @@ function cleanCache() {
 
 import chatRoute from "./routes/chat.js";
 
-app.use("/chat", chatRoute);
+// O Vercel tem que saber o app 
+app.use("/chat", chatRoute); // Minha Api para Chat Bot Discord, ou ChatGpt , ou para outro projeto
 
 // =======================
 // SERVIR FRONTEND
@@ -70,6 +73,8 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 const isServerless = process.env.VERCEL || process.env.AWS_REGION;
+
+// Reconhecimento do Tipo do Server Local ou Vercel
 
 if (!isServerless) {
   app.listen(PORT, () => {
