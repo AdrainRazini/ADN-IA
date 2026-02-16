@@ -19,7 +19,6 @@
 
 "system_prompt": "You are a professional test chat assistant. Respond clearly, confidently, and efficiently. Keep answers short and helpful.",
 
-
   "behavior": {
     "memory_enabled": false,
     "cache_enabled": true,

@@ -7,15 +7,23 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const { message, core } = req.body;
+    const { message, core, author } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "Message is required." });
     }
 
-    const coreName = core || "mini_adn";
+    const coreName = core || "mini_adn"; // Chat Usado 
+    const cliente = author || "Guest"; // Nome Do Cliente 
 
-    const reply = await runCore(coreName, message);
+    const customContext = `
+    Current user name: ${cliente}.
+    Address the user naturally when appropriate.
+    `;
+
+    console.log(cliente) // Log Simples do Cliente -- Nome ou Login
+
+    const reply = await runCore(coreName, message, customContext); // Enviar Dados ao Chat Bot 
 
     res.json({ reply, core: coreName });
 
