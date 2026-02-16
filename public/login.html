@@ -13,26 +13,25 @@
       box-sizing: border-box;
       font-family: Arial, sans-serif;
     }
+
 body {
   margin: 0;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* 🎨 Fundo com imagem + gradiente translúcido */
-  background: 
-
-    url("img/Adn_Bck.png") no-repeat center center fixed;
-
-  background-size: cover;
   font-family: "Poppins", Arial, sans-serif;
-  color: #fff;
+  color: #ffffff;
   overflow: hidden;
-  transition: background 0.5s ease;
+
+  background:
+    radial-gradient(circle at center, rgba(0, 217, 255, 0.08), transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(0, 255, 179, 0.06), transparent 70%),
+    linear-gradient(135deg, #0a0c10, #11151c, #0d1117);
 }
 
-/* ✨ Efeito de brilho suave animado */
+
+/*  Efeito de brilho suave animado */
 body::before {
   content: "";
   position: absolute;
@@ -58,10 +57,10 @@ body::before {
 
 
     #login-page {
-      background: white;
+      background: rgb(255, 255, 255);
       padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.481);
       text-align: center;
       width: 300px;
     }
