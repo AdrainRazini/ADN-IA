@@ -3,10 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <title>ADN Nexus</title>
-  <link rel="stylesheet" href="css/style.css">
+
   <link rel="shortcut icon" href="image/Adn_Nexus.png">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/menu.css">
+  <link rel="stylesheet" href="css/modal.css">
+
 </head>
 <body>
+
+
+
+<!--  Menu Mobile -->
+<div class="hamburger" id="hamburgerMenu">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+<!--  Menu Desktop -->
+<div class="navbar">
+  <a href="#top"><i class="fas fa-home"></i> Início</a>
+  <a href="#api"><i class="fas fa-globe"></i> APIs</a>
+  <a id="userLinkDesktop" href="login.html"><i class="fas fa-server"></i> Login</a>
+</div>
+
+<!--  Menu Mobile -->
+<div class="side-menu" id="sideMenu">
+  <a href="#top"><i class="fas fa-home"></i> Início</a>
+  <a href="#api"><i class="fas fa-globe"></i> APIs</a>
+  <a id="userLinkMobile" href="login.html"><i class="fas fa-server"></i> Login</a>
+</div>
+
+<script type="module">
+  import { auth } from "./js/Auth.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+
+  const userLinkDesktop = document.getElementById("userLinkDesktop");
+  const userLinkMobile  = document.getElementById("userLinkMobile");
+
+  function setUserMenu(isLogged) {
+    if (isLogged) {
+      userLinkDesktop.innerHTML = `<i class="fas fa-user"></i> User`;
+      userLinkDesktop.href = "user-dashboard.html";
+
+      userLinkMobile.innerHTML = `<i class="fas fa-user"></i> User`;
+      userLinkMobile.href = "user-dashboard.html";
+    } else {
+      userLinkDesktop.innerHTML = `<i class="fas fa-server"></i> Login`;
+      userLinkDesktop.href = "login.html";
+
+      userLinkMobile.innerHTML = `<i class="fas fa-server"></i> Login`;
+      userLinkMobile.href = "login.html";
+    }
+  }
+
+  // Carrega instantaneamente com base no localStorage
+  const nome = localStorage.getItem("username");
+  const email = localStorage.getItem("useremail");
+
+  setUserMenu(!!(nome && email));
+
+  // Checa autenticação real
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setUserMenu(true);
+    } else {
+      setUserMenu(false);
+
+      // Remove somente os dados de usuário
+      localStorage.removeItem("username");
+      localStorage.removeItem("useremail");
+      localStorage.removeItem("userphoto");
+    }
+  });
+</script>
+
+
 
   <div class="app">
 
@@ -39,5 +113,6 @@
   </div>
 
   <script src="js/app.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>

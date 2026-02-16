@@ -18,3 +18,24 @@ window.addEventListener('DOMContentLoaded', () => {
             window.location.href = "404.html";
         });
 });
+
+
+
+// === 🔹 MENU HAMBÚRGUER e TOOLTIP (inalterado) ===
+const hamburger = document.getElementById("hamburgerMenu");
+const sideMenu = document.getElementById("sideMenu");
+const overlay = document.getElementById("menuOverlay");
+
+hamburger.addEventListener("click", () => {
+  const active = hamburger.classList.toggle("active");
+  sideMenu.classList.toggle("active", active);
+  overlay.classList.toggle("active", active);
+});
+
+overlay.addEventListener("click", () => {
+  hamburger.classList.remove("active");
+  sideMenu.classList.remove("active");
+  overlay.classList.remove("active");
+});
+
+

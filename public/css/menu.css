@@ -97,6 +97,16 @@
   box-shadow: 0 0 12px rgba(0, 255, 179, 0.4);
 }
 
+.side-menu {
+  transform: translateX(100%);
+  right: 0;
+}
+
+.side-menu.active {
+  transform: translateX(0);
+}
+
+
 /* ======= OVERLAY ======= */
 .menu-overlay {
   position: fixed;

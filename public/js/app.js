@@ -1,3 +1,15 @@
+
+
+  // Pre-carrega info da memória local
+  const nome = localStorage.getItem('username');
+  const email = localStorage.getItem('useremail');
+  const foto = localStorage.getItem('userphoto');
+
+  if (nome) document.getElementById("user-name").innerText = nome;
+  if (email) document.getElementById("user-email").innerText = email;
+  if (foto) document.getElementById("user-avatar").src = foto;
+
+
 function addMessage(text, type) {
   const msgDiv = document.createElement("div");
   msgDiv.classList.add("message", type);
@@ -26,7 +38,8 @@ async function send() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: text,
-        core: core
+        core: core,
+        author: nome
       })
     });
 
