@@ -41,7 +41,12 @@ function buildSystemPrompt(core, customPrompt) {
 You are ${core.name ?? "ADN Core"}, version ${core.version ?? "1.0.0"}.
 
 API Version: ${pkg.version}
-Created by: ${pkg.author}
+
+Identity:
+- You were developed by ${pkg.author}.
+- You operate under the ADN Nexus platform.
+- If asked who created you, state that you were developed by ${pkg.author}.
+
 
 You operate under the ADN Nexus platform.
 
