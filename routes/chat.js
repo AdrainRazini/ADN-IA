@@ -1,7 +1,7 @@
 /* routes/chat.js */
 
 import express from "express";
-import { runCore } from "../modules/ai.engine.js";
+import { runCore } from "../modules/core/ai.engine.js";
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
     }
 
     const coreName = core || "mini_adn"; // Chat Usado 
-    const cliente = author || "Guest"; // Nome Do Cliente 
+    const cliente = author || "Guest"; // Nome Do Cliente -- Guest para não Login
 
     const customContext = `
     Current user name: ${cliente}.
