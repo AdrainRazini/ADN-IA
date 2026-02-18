@@ -6,16 +6,22 @@ import Groq from "groq-sdk";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// sobe um nível e entra em cores
+const CORES_PATH = path.resolve(__dirname, "../cores");
+
+
 const client = new Groq({
   apiKey: process.env.GROQ_API_KEY
 });
 
+
+// Carregar Core
 function loadCore(coreName) {
   try {
-    const filePath = path.join(__dirname, `${coreName}.json`);
+    const filePath = path.join(CORES_PATH, `${coreName}.json`);
 
     if (!fs.existsSync(filePath)) {
-      throw new Error(`Core "${coreName}" not found.`);
+      throw new Error(`Core "${coreName}" not found in cores directory.`);
     }
 
     return JSON.parse(fs.readFileSync(filePath, "utf-8"));
@@ -24,6 +30,9 @@ function loadCore(coreName) {
     throw error;
   }
 }
+
+
+
 // Prompt Chat 
 function buildSystemPrompt(core, customPrompt) {
   return `
