@@ -9,6 +9,8 @@ const __dirname = path.dirname(__filename);
 // sobe um nível e entra em cores
 const CORES_PATH = path.resolve(__dirname, "../cores");
 
+const packagePath = path.resolve(__dirname, "../../package.json");
+const pkg = JSON.parse(fs.readFileSync(packagePath, "utf-8"));
 
 const client = new Groq({
   apiKey: process.env.GROQ_API_KEY
@@ -37,6 +39,10 @@ function loadCore(coreName) {
 function buildSystemPrompt(core, customPrompt) {
   return `
 You are ${core.name ?? "ADN Core"}, version ${core.version ?? "1.0.0"}.
+
+API Version: ${pkg.version}
+Created by: ${pkg.author}
+
 You operate under the ADN Nexus platform.
 
 Language: ${core?.personality?.language ?? "en-us"}.

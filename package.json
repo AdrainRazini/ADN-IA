@@ -1,6 +1,6 @@
 {
   "name": "chat_bot_v3",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -18,5 +18,11 @@
     "firebase": "^12.9.0",
     "groq-sdk": "^0.37.0",
     "openai": "^6.10.0"
-  }
+  },
+
+  "metadata": {
+  "author": "Adrian Razini",
+  "organization": "ADN Nexus",
+  "year": 2026
+}
 }
