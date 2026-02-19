@@ -1,7 +1,7 @@
 /* routes/chat.js */
 
 import express from "express";
-import { runCore } from "../modules/ai/engine.js";
+import { runCore } from "../src/ai/engine.js";
 
 const router = express.Router();
 
