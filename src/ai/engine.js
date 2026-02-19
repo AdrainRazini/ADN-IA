@@ -15,6 +15,7 @@ const client = new Groq({
   apiKey: process.env.GROQ_API_KEY
 });
 
+
 function loadCore(coreName) {
   const filePath = path.join(CORES_PATH, `${coreName}.json`);
 

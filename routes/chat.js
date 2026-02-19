@@ -1,8 +1,9 @@
 /* routes/chat.js */
 
 import express from "express";
+// Conexão ao engine.js da IA
 import { runCore } from "../src/ai/engine.js";
-
+// Criação da Rota para http
 const router = express.Router();
 
 router.post("/", async (req, res) => {
