@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="css/menu.css" />
   <link rel="stylesheet" href="css/modal.css" />
   <link rel="stylesheet" href="css/pages.css" />
-  <link rel="shortcut icon" href="img/ADN_Red.png" type="image/x-icon" />
+  <link rel="shortcut icon" href="image/Adn_Nexus.png" type="image/x-icon" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -104,7 +104,7 @@ btnIndex.addEventListener("click", () => {
       }
 
       try {
-        const userDocRef = doc(db, "users", user.email);
+        const userDocRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userDocRef);
 
         if (!userSnap.exists() || userSnap.data().role !== "admin") {
@@ -135,7 +135,7 @@ btnIndex.addEventListener("click", () => {
 
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        const id = docSnap.id;
+        const id =  data.email; //*docSnap.id;
         const nome = data.name || data.nome || "-";
         const papel = data.role || "user";
         const foto = data.photo || "";

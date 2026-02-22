@@ -14,13 +14,16 @@ export async function loginWithGoogle() {
     localStorage.setItem("username", user.displayName);
     localStorage.setItem("useremail", user.email);
     localStorage.setItem("userphoto", user.photoURL);
+    localStorage.setItem("useruid", user.uid);
 
-    // ⚠️ Agora salva os dados em 'users', mantendo campos como role (se já existir)
-    await setDoc(doc(db, "users", user.email), {
+    //  Agora salva os dados em 'users', mantendo campos como role (se já existir)
+    await setDoc(doc(db, "users", user.uid), {
       name: user.displayName,
       email: user.email,
       photo: user.photoURL,
-      lastLogin: new Date().toISOString()
+      useruid: user.uid,
+      lastLogin: new Date().toISOString(),
+      // createdAt: new Date().toISOString(),
     }, { merge: true }); // <- evita apagar o campo role
 
     window.location.href = "user-dashboard.html";

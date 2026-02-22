@@ -205,10 +205,12 @@
   const nome = localStorage.getItem('username');
   const email = localStorage.getItem('useremail');
   const foto = localStorage.getItem('userphoto');
+  const useruid = localStorage.getItem('useruid');
 
   if (nome) document.getElementById("user-name").innerText = nome;
   if (email) document.getElementById("user-email").innerText = email;
   if (foto) document.getElementById("user-avatar").src = foto;
+  
 
   // Listener único
   onAuthStateChanged(auth, async (user) => {
@@ -218,7 +220,7 @@
     }
 
     try {
-      const userDocRef = doc(db, "users", user.email);
+      const userDocRef = doc(db, "users", user.uid); // Uid Imutavel 
       const userDocSnap = await getDoc(userDocRef);
 
       let role = "Usuário Comum";
