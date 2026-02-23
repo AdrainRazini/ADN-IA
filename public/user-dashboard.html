@@ -244,6 +244,16 @@
       style="width:100%; padding:8px; margin:10px 0 20px 0;"
     >
 
+    <label>Foto de Perfil</label>
+    <label for="modal-user-photo">Foto (URL)</label>
+    <input 
+     type="text" 
+     id="modal-user-photo"
+     placeholder="https://exemplo.com/foto.jpg"
+     style="width:100%; padding:8px; margin:10px 0 20px 0;"
+    >
+    <input type="file" id="modal-user-file" accept="image/*" style="display:none;">
+
     <button onclick="salvarEdicao()">Salvar Alterações</button>
     <button class="logout-btn" onclick="fecharModal()">Cancelar</button>
 
@@ -257,6 +267,9 @@
 
   import { updateProfile } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
   import { updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-storage.js";
+  const storage = getStorage();
 
   const loading = document.getElementById("loading");
   const dashboard = document.getElementById("dashboard");
@@ -321,6 +334,10 @@ window.ativarEdicao = () => {
     user.displayName || "";
 
   document.getElementById("modal-dashboard").style.display = "flex";
+
+  document.getElementById("modal-user-photo").value =
+  user.photoURL || user.photo || "" ;
+
 };
 
 window.fecharModal = () => {
@@ -332,10 +349,20 @@ window.cancelarEdicao = () => {
 };
 
 window.salvarEdicao = async () => {
+
   const user = auth.currentUser;
+
   const novoNome = document
     .getElementById("modal-user-name")
     .value.trim();
+
+  const novaFotoURL = document
+    .getElementById("modal-user-photo")
+    .value.trim();
+
+  const file = document
+    .getElementById("modal-user-file")
+    .files[0];
 
   if (!novoNome) {
     alert("O nome não pode estar vazio.");
@@ -343,21 +370,40 @@ window.salvarEdicao = async () => {
   }
 
   try {
+
+    let photoFinal = user.photoURL;
+
+    //  PRIORIDADE 1: Se escolheu arquivo, faz upload
+    if (file) {
+      const storageRef = ref(storage, `profilePhotos/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      photoFinal = await getDownloadURL(storageRef);
+    }
+
+    //  PRIORIDADE 2: Se digitou URL e não enviou arquivo
+    else if (novaFotoURL) {
+      photoFinal = novaFotoURL;
+    }
+
+    //  Atualiza Auth
     await updateProfile(user, {
-      displayName: novoNome
+      displayName: novoNome,
+      photoURL: photoFinal || null
     });
 
+    //  Atualiza Firestore
     const userRef = doc(db, "users", user.uid);
     await updateDoc(userRef, {
-      name: novoNome
+      name: novoNome,
+      photoURL: photoFinal || ""
     });
 
-    // Atualiza tela principal
-    document.getElementById("user-name-text").innerText =
-      novoNome;
+    //  Atualiza interface
+    document.getElementById("user-name-text").innerText = novoNome;
+    document.getElementById("user-avatar").src =
+      photoFinal || "image/anonimo.png";
 
     alert("Dados atualizados com sucesso!");
-
     fecharModal();
 
   } catch (error) {
@@ -365,7 +411,6 @@ window.salvarEdicao = async () => {
     alert("Erro ao atualizar dados.");
   }
 };
-
 </script>
 <script type="module" src="js/script.js"></script>
 </body>
