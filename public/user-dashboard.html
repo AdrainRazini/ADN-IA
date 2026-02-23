@@ -171,14 +171,20 @@
   <img id="user-avatar" src="image/anonimo.png" alt="Foto do usuário"/>
 
   <div class="user-info">
-    <p><strong>Nome:</strong> <span id="user-name">Carregando...</span></p>
+ <p>
+  <strong>Nome:</strong>
+  <span id="user-name-text">Carregando...</span>
+  <input id="user-name-input" type="text" style="display:none; width:100%; padding:6px;">
+</p>
     <p><strong>Email:</strong> <span id="user-email">Carregando...</span></p>
     <p><strong>Papel:</strong> <span id="user-role">Carregando...</span></p>
   </div>
 
   <button onclick="voltarParaInicio()"><i class="fas fa-arrow-left"></i> Voltar</button>
+  <button onclick="ativarEdicao()"><i class="fas fa-pen"></i> Editar Dados</button>
   <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-
+  <button id="save-btn" style="display:none;" onclick="salvarEdicao()">Salvar Alterações</button>
+ 
   <!-- Admin -->
   <div id="admin-section">
     <h3><i class="fas fa-shield-alt"></i> Área do Admin</h3>
@@ -201,67 +207,108 @@
   import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
   import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-  // Pre-carrega info da memória local
-  const nome = localStorage.getItem('username');
-  const email = localStorage.getItem('useremail');
-  const foto = localStorage.getItem('userphoto');
-  const useruid = localStorage.getItem('useruid');
+  import { updateProfile } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+  import { updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-  if (nome) document.getElementById("user-name").innerText = nome;
-  if (email) document.getElementById("user-email").innerText = email;
-  if (foto) document.getElementById("user-avatar").src = foto;
-  
+  const loading = document.getElementById("loading");
+  const dashboard = document.getElementById("dashboard");
+  const adminSection = document.getElementById("admin-section");
 
-  // Listener único
   onAuthStateChanged(auth, async (user) => {
+
     if (!user) {
       window.location.href = "login.html";
       return;
     }
 
     try {
-      const userDocRef = doc(db, "users", user.uid); // Uid Imutavel 
+      // Atualiza UI com dados reais do Auth
+      document.getElementById("user-name-text").innerText = user.displayName || "Usuário";
+      document.getElementById("user-name-input").value = user.displayName || "";
+      document.getElementById("user-email").innerText = user.email || "";
+      document.getElementById("user-avatar").src = user.photoURL || "image/anonimo.png";
+
+      const userDocRef = doc(db, "users", user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
-      let role = "Usuário Comum";
+      let role = "user";
 
       if (userDocSnap.exists()) {
         role = userDocSnap.data().role || role;
       }
-
-      // Atualiza na tela
+     // Muda Papel para Texto
      document.getElementById("user-role").innerText =
-      role.charAt(0).toUpperCase() + role.slice(1);
+     role === "admin" ? "Admin" : "Usuário";
 
-     // EXIBE A SEÇÃO DE ADMIN SE FOR ADMIN
-     if (role.toLowerCase() === "admin") {
-      document.getElementById("admin-section").style.display = "block";
-     }
-
-      document.getElementById("user-role").innerText =
-        role.charAt(0).toUpperCase() + role.slice(1);
+      // Controle visual admin
+      if (role.toLowerCase() === "admin") {
+        adminSection.style.display = "block";
+      } else {
+        adminSection.style.display = "none";
+      }
 
     } catch (error) {
       console.error("Erro ao buscar papel:", error);
       document.getElementById("user-role").innerText = "Erro ao carregar";
     }
 
-    // mostra dashboard
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
+    loading.style.display = "none";
+    dashboard.style.display = "block";
   });
 
-  // Funções globais
-  window.voltarParaInicio = () => window.location.href = "index.html";
-
-  window.logout = () => {
-    signOut(auth).then(() => {
-      localStorage.clear();
-      window.location.href = "login.html";
-    });
+  window.voltarParaInicio = () => {
+    window.location.href = "index.html";
   };
 
-  
+  window.logout = async () => {
+    await signOut(auth);
+    localStorage.clear();
+    window.location.href = "login.html";
+  };
+
+window.ativarEdicao = () => {
+  document.getElementById("user-name-text").style.display = "none";
+  document.getElementById("user-name-input").style.display = "block";
+  document.getElementById("save-btn").style.display = "block";
+};
+
+window.salvarEdicao = async () => {
+  const user = auth.currentUser;
+  const novoNome = document.getElementById("user-name-input").value.trim();
+
+  if (!novoNome) {
+    alert("O nome não pode estar vazio.");
+    return;
+  }
+
+  try {
+    // Atualiza no Auth
+    await updateProfile(user, {
+      displayName: novoNome
+    });
+
+    // Atualiza no Firestore (opcional, se quiser salvar lá também)
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, {
+      name: novoNome
+    });
+
+    document.getElementById("user-name-text").innerText = novoNome;
+
+    alert("Dados atualizados com sucesso!");
+
+    // Volta modo visual
+    document.getElementById("user-name-text").style.display = "inline";
+    document.getElementById("user-name-input").style.display = "none";
+    document.getElementById("save-btn").style.display = "none";
+
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao atualizar dados.");
+  }
+};
+
+
 </script>
 <script type="module" src="js/script.js"></script>
 </body>
