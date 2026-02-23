@@ -112,14 +112,14 @@ btnIndex.addEventListener("click", () => {
           return;
         }
 
-        renderUserTable(user.email);
+        renderUserTable(user.uid);
       } catch (err) {
         userTable.innerHTML = "<p>Erro ao verificar permissões.</p>";
         console.error(err);
       }
     });
 
-    async function renderUserTable(loggedUserEmail) {
+    async function renderUserTable(loggedUserUid) {
       const usersRef = collection(db, "users");
       const snapshot = await getDocs(usersRef);
       let html = `
@@ -135,7 +135,8 @@ btnIndex.addEventListener("click", () => {
 
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        const id =  data.email; //*docSnap.id;
+        const id = docSnap.id; // usa o UID real do documento 
+        const email = data.email
         const nome = data.name || data.nome || "-";
         const papel = data.role || "user";
         const foto = data.photo || "";
@@ -146,11 +147,11 @@ btnIndex.addEventListener("click", () => {
         html += `
           <tr>
             <td>${foto ? `<img src="${foto}" alt="foto" width="32" height="32">` : "-"}</td>
-            <td>${id}</td>
+            <td>${email}</td>
             <td>${nome}</td>
             <td>${lastLogin}</td>
             <td>
-              <select data-id="${id}" class="role-select" ${id === loggedUserEmail ? 'title="Você não pode mudar seu próprio papel"' : ''}>
+              <select data-id="${id}" class="role-select" ${id === loggedUserUid ? 'title="Você não pode mudar seu próprio papel"' : ''}>
                 <option value="user" ${papel === "user" ? "selected" : ""}>User</option>
                 <option value="admin" ${papel === "admin" ? "selected" : ""}>Admin</option>
               </select>
@@ -188,7 +189,7 @@ btnIndex.addEventListener("click", () => {
           const userId = e.target.dataset.id;
           const newRole = e.target.value;
 
-          if (userId === auth.currentUser.email && newRole !== "admin") {
+         if (userId === auth.currentUser.uid && newRole !== "admin") {
             alert("Você não pode remover seu próprio papel de admin.");
             e.target.value = "admin";
             return;
@@ -238,6 +239,7 @@ btnIndex.addEventListener("click", () => {
       msgBox.className = "msg";
     }
   </script>
+
   <script type="module" src="js/script.js"></script>
 
 </body>
