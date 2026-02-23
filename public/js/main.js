@@ -1,8 +1,6 @@
-
-// js/main.js
 import { auth, db, provider } from "./Auth.js";
 import { signInWithPopup } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 auth.languageCode = 'pt-BR';
 
@@ -16,21 +14,33 @@ export async function loginWithGoogle() {
     localStorage.setItem("userphoto", user.photoURL);
     localStorage.setItem("useruid", user.uid);
 
-    //  Agora salva os dados em 'users', mantendo campos como role (se já existir)
-    await setDoc(doc(db, "users", user.uid), {
-      name: user.displayName,
-      email: user.email,
-      photo: user.photoURL,
-      useruid: user.uid,
-      lastLogin: new Date().toISOString(),
-      // createdAt: new Date().toISOString(),
-    }, { merge: true }); // <- evita apagar o campo role
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      // Primeira vez
+      await setDoc(userRef, {
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+        useruid: user.uid,
+        role: "user",
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
+      });
+    } else {
+      // Login recorrente
+      await updateDoc(userRef, {
+        lastLogin: new Date().toISOString()
+      });
+    }
 
     window.location.href = "user-dashboard.html";
+
   } catch (error) {
     console.error("Erro ao fazer login:", error?.message || error);
     alert("Erro ao fazer login com o Google: " + (error?.message || error));
   }
 }
 
-// login com o servidor
+// Login 
