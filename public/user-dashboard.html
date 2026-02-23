@@ -151,6 +151,33 @@
     margin-bottom: 10px;
     font-weight: 600;
   }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  cursor: pointer;
+}
+
 </style>
 
 
@@ -174,7 +201,6 @@
  <p>
   <strong>Nome:</strong>
   <span id="user-name-text">Carregando...</span>
-  <input id="user-name-input" type="text" style="display:none; width:100%; padding:6px;">
 </p>
     <p><strong>Email:</strong> <span id="user-email">Carregando...</span></p>
     <p><strong>Papel:</strong> <span id="user-role">Carregando...</span></p>
@@ -183,8 +209,7 @@
   <button onclick="voltarParaInicio()"><i class="fas fa-arrow-left"></i> Voltar</button>
   <button onclick="ativarEdicao()"><i class="fas fa-pen"></i> Editar Dados</button>
   <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-  <button id="save-btn" style="display:none;" onclick="salvarEdicao()">Salvar Alterações</button>
- 
+
   <!-- Admin -->
   <div id="admin-section">
     <h3><i class="fas fa-shield-alt"></i> Área do Admin</h3>
@@ -198,9 +223,32 @@
     </button>
   </div>
 
+
 </div>
 
 
+<!-- Modal -->
+<div class="modal" id="modal-dashboard" style="display:none;">
+  <div class="modal-content">
+
+    <span class="close-btn" onclick="fecharModal()">
+      <i class="fas fa-times"></i>
+    </span>
+
+    <h3>Editar Dados</h3>
+
+    <label for="modal-user-name">Nome</label>
+    <input 
+      type="text" 
+      id="modal-user-name" 
+      style="width:100%; padding:8px; margin:10px 0 20px 0;"
+    >
+
+    <button onclick="salvarEdicao()">Salvar Alterações</button>
+    <button class="logout-btn" onclick="fecharModal()">Cancelar</button>
+
+  </div>
+</div>
 
 <script type="module">
   import { auth, db } from "./js/Auth.js";
@@ -224,7 +272,6 @@
     try {
       // Atualiza UI com dados reais do Auth
       document.getElementById("user-name-text").innerText = user.displayName || "Usuário";
-      document.getElementById("user-name-input").value = user.displayName || "";
       document.getElementById("user-email").innerText = user.email || "";
       document.getElementById("user-avatar").src = user.photoURL || "image/anonimo.png";
 
@@ -266,15 +313,29 @@
     window.location.href = "login.html";
   };
 
+  // Editar 
 window.ativarEdicao = () => {
-  document.getElementById("user-name-text").style.display = "none";
-  document.getElementById("user-name-input").style.display = "block";
-  document.getElementById("save-btn").style.display = "block";
+  const user = auth.currentUser;
+
+  document.getElementById("modal-user-name").value =
+    user.displayName || "";
+
+  document.getElementById("modal-dashboard").style.display = "flex";
+};
+
+window.fecharModal = () => {
+  document.getElementById("modal-dashboard").style.display = "none";
+};
+
+window.cancelarEdicao = () => {
+  fecharModal();
 };
 
 window.salvarEdicao = async () => {
   const user = auth.currentUser;
-  const novoNome = document.getElementById("user-name-input").value.trim();
+  const novoNome = document
+    .getElementById("modal-user-name")
+    .value.trim();
 
   if (!novoNome) {
     alert("O nome não pode estar vazio.");
@@ -282,32 +343,28 @@ window.salvarEdicao = async () => {
   }
 
   try {
-    // Atualiza no Auth
     await updateProfile(user, {
       displayName: novoNome
     });
 
-    // Atualiza no Firestore (opcional, se quiser salvar lá também)
     const userRef = doc(db, "users", user.uid);
     await updateDoc(userRef, {
       name: novoNome
     });
 
-    document.getElementById("user-name-text").innerText = novoNome;
+    // Atualiza tela principal
+    document.getElementById("user-name-text").innerText =
+      novoNome;
 
     alert("Dados atualizados com sucesso!");
 
-    // Volta modo visual
-    document.getElementById("user-name-text").style.display = "inline";
-    document.getElementById("user-name-input").style.display = "none";
-    document.getElementById("save-btn").style.display = "none";
+    fecharModal();
 
   } catch (error) {
     console.error(error);
     alert("Erro ao atualizar dados.");
   }
 };
-
 
 </script>
 <script type="module" src="js/script.js"></script>
